@@ -21,6 +21,7 @@ using UnityEngine.XR.WSA;
 using UnityEngine.XR.WSA.Input;
 using System.Threading;
 using Microsoft.MixedReality.Toolkit.Experimental.Utilities;
+using UnityEngine.Timeline;
 
 // App permissions, modify the appx file for research mode streams https://docs.microsoft.com/en-us/windows/uwp/packaging/app-capability-declarations
 
@@ -29,10 +30,8 @@ namespace ArUcoDetectionHoloLensUnity
 {
     // Using the hololens for cv .winmd file for runtime support Build HoloLensForCV c++ project
     // (x86) and copy all output files to Assets->Plugins->x86 https://docs.unity3d.com/2018.4/Documentation/Manual/IL2CPP-WindowsRuntimeSupport.html
-    public class ArUcoMarkerDetection : MonoBehaviour
+    public class ArUcoMarkersDetection : MonoBehaviour
     {
-        private bool _isWorldAnchored = false;
-
         public Text myText;
 
         public CvUtils.DeviceTypeUnity deviceType;
@@ -42,7 +41,8 @@ namespace ArUcoDetectionHoloLensUnity
 
         public CvUtils.ArUcoDictionaryName arUcoDictionaryName;
 
-        // Params for aruco detection Marker size in meters: 0.08 cm
+        public int skipFrames = 3;
+
         public float markerSize;
 
         /// <summary>
@@ -52,18 +52,12 @@ namespace ArUcoDetectionHoloLensUnity
         public CameraCalibrationParams calibParams;
 
         /// <summary>
-        /// Game object for to use for marker instantiation
-        /// </summary>
-        public GameObject markerGo;
-
-        /// <summary>
         /// List of prefab instances of detected aruco markers.
         /// </summary>
-        //private List<GameObject> _markerGOs;
+        public ArUcoMarker[] trackedObjects = new ArUcoMarker[1];
 
         private bool _mediaFrameSourceGroupsStarted = false;
         private int _frameCount = 0;
-        public int skipFrames = 3;
 
 #if ENABLE_WINMD_SUPPORT
 
@@ -93,24 +87,16 @@ namespace ArUcoDetectionHoloLensUnity
 
 #endif
 
-        // Gesture handler
-        private GestureRecognizer _gestureRecognizer;
-
         #region UnityMethods
 
         // Use this for initialization
         private async void Start()
         {
-            // Initialize gesture handler
-            InitializeHandler();
-
             // Start the media frame source groups.
             await StartHoloLensMediaFrameSourceGroups();
 
             // Wait for a few seconds prior to making calls to Update HoloLens media frame source groups.
             StartCoroutine(DelayCoroutine());
-
-            markerGo.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
         }
 
         /// <summary>
@@ -121,6 +107,12 @@ namespace ArUcoDetectionHoloLensUnity
         private IEnumerator DelayCoroutine()
         {
             Debug.Log("Started Coroutine at timestamp : " + Time.time);
+
+            // Update Local Scale according to MarkerSize
+            foreach (var trackedObject in trackedObjects)
+            {
+                trackedObject.markerGo.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
+            }
 
             // YieldInstruction that waits for 2 seconds.
             yield return new WaitForSeconds(2);
@@ -230,27 +222,34 @@ namespace ArUcoDetectionHoloLensUnity
 
         private void UpdateArUcoDetections(IList<DetectedArUcoMarker> detections)
         {
-            if (!_mediaFrameSourceGroupsStarted ||
-                _pvMediaFrameSourceGroup == null)
+            if (!_mediaFrameSourceGroupsStarted || _pvMediaFrameSourceGroup == null)
+                return;
+
+            // Detect ArUco markers in current frame
+            myText.text = "Tracking markers from sensor frames..";
+
+            // If no markers in scene, anchor markers to last position
+            if (detections.Count == 0)
             {
+                foreach (var trackedObject in trackedObjects)
+                {
+                    // Add a world anchor to the attached gameobject
+                    trackedObject.markerGo.AddComponent<WorldAnchor>();
+                    trackedObject.isWorldAnchored = true;
+                }
+
                 return;
             }
 
-            // Detect ArUco markers in current frame
-            // https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#void%20Rodrigues(InputArray%20src,%20OutputArray%20dst,%20OutputArray%20jacobian)
-            //IList<DetectedArUcoMarker> detectedArUcoMarkers = _pvMediaFrameSourceGroup.GetArUcoDetections();
-            //_pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType);
-
-            // If we detect a marker, display
-            if (detections.Count != 0)
+            foreach (var trackedObject in trackedObjects)
             {
                 // Remove world anchor from game object
-                if (_isWorldAnchored)
+                if (trackedObject.isWorldAnchored)
                 {
                     try
                     {
-                        DestroyImmediate(markerGo.GetComponent<WorldAnchor>());
-                        _isWorldAnchored = false;
+                        DestroyImmediate(trackedObject.markerGo.GetComponent<WorldAnchor>());
+                        trackedObject.isWorldAnchored = false;
                     }
                     catch (Exception)
                     {
@@ -260,6 +259,9 @@ namespace ArUcoDetectionHoloLensUnity
 
                 foreach (var detectedMarker in detections)
                 {
+                    if (detectedMarker.Id != trackedObject.id)
+                        continue;
+
                     // Get pose from OpenCV and format for Unity
                     Vector3 position = CvUtils.Vec3FromFloat3(detectedMarker.Position);
                     position.y *= -1f;
@@ -271,19 +273,11 @@ namespace ArUcoDetectionHoloLensUnity
                     Matrix4x4 transformUnityWorld = cameraToWorldUnity * transformUnityCamera;
 
                     // Apply updated transform to gameobject in world
-                    markerGo.transform.SetPositionAndRotation(
+                    trackedObject.markerGo.transform.SetPositionAndRotation(
                         CvUtils.GetVectorFromMatrix(transformUnityWorld),
                         CvUtils.GetQuatFromMatrix(transformUnityWorld));
                 }
             }
-            // If no markers in scene, anchor marker go to last position
-            else
-            {
-                // Add a world anchor to the attached gameobject
-                markerGo.AddComponent<WorldAnchor>();
-                _isWorldAnchored = true;
-            }
-            myText.text = "Began streaming sensor frames. Double tap to end streaming.";
         }
 
 #endif
@@ -349,39 +343,5 @@ namespace ArUcoDetectionHoloLensUnity
         }
 
 #endif
-
-        #region TapGestureHandler
-
-        private void InitializeHandler()
-        {
-            // New recognizer class
-            _gestureRecognizer = new GestureRecognizer();
-
-            // Set tap as a recognizable gesture
-            _gestureRecognizer.SetRecognizableGestures(GestureSettings.DoubleTap);
-
-            // Begin listening for gestures
-            _gestureRecognizer.StartCapturingGestures();
-
-            // Capture on gesture events with delegate handler
-            _gestureRecognizer.Tapped += GestureRecognizer_Tapped;
-
-            Debug.Log("Gesture recognizer initialized.");
-        }
-
-        // On tapped event, stop all frame source groups
-        private void GestureRecognizer_Tapped(TappedEventArgs obj)
-        {
-            StopHoloLensMediaFrameSourceGroup();
-            CloseHandler();
-        }
-
-        private void CloseHandler()
-        {
-            _gestureRecognizer.StopCapturingGestures();
-            _gestureRecognizer.Dispose();
-        }
-
-        #endregion TapGestureHandler
     }
 }

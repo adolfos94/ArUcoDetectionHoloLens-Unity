@@ -292,7 +292,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: New Text
+  m_Text: Debug Text
 --- !u!1001 &817786828
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -636,19 +636,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c5133e304cced545be474fe94a0decc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myText: {fileID: 705192944}
+  debugText: {fileID: 705192944}
   deviceType: 1
   sensorTypePv: 0
   arUcoDictionaryName: 7
-  skipFrames: 3
-  markerSize: 0.1
+  skipFrames: 1
+  markerSize: 0.046
   calibParams: {fileID: 1281810486}
   trackedObjects:
   - isWorldAnchored: 0
-    id: 0
+    id: 200
     markerGo: {fileID: 519181811}
   - isWorldAnchored: 0
-    id: 1
+    id: 201
     markerGo: {fileID: 817786830}
 --- !u!4 &1281810485
 Transform:

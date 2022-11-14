@@ -30,13 +30,13 @@ namespace ArUcoDetectionHoloLensUnity
 {
     // Using the hololens for cv .winmd file for runtime support Build HoloLensForCV c++ project
     // (x86) and copy all output files to Assets->Plugins->x86 https://docs.unity3d.com/2018.4/Documentation/Manual/IL2CPP-WindowsRuntimeSupport.html
+
     public class ArUcoMarkersDetection : MonoBehaviour
     {
-        public Text myText;
+        public Text debugText;
 
         public CvUtils.DeviceTypeUnity deviceType;
 
-        // Note: HL2 only has PV camera function currently.
         public CvUtils.SensorTypeUnity sensorTypePv;
 
         public CvUtils.ArUcoDictionaryName arUcoDictionaryName;
@@ -46,8 +46,7 @@ namespace ArUcoDetectionHoloLensUnity
         public float markerSize;
 
         /// <summary>
-        /// Holder for the camera parameters (intrinsics and extrinsics) of the tracking sensor on
-        /// the HoloLens 2
+        /// Camera parameters (intrinsics and extrinsics) of the tracking sensor on the HoloLens 2
         /// </summary>
         public CameraCalibrationParams calibParams;
 
@@ -150,7 +149,7 @@ namespace ArUcoDetectionHoloLensUnity
         {
 #if ENABLE_WINMD_SUPPORT
             // Plugin doesn't work in the Unity editor
-            myText.text = "Initializing MediaFrameSourceGroups...";
+            debugText.text = "Initializing MediaFrameSourceGroups...";
 
             // PV
             Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up sensor frame streamer");
@@ -188,14 +187,14 @@ namespace ArUcoDetectionHoloLensUnity
             _pvMediaFrameSourceGroup.Enable(_sensorType);
 
             // Start media frame source groups
-            myText.text = "Starting MediaFrameSourceGroups...";
+            debugText.text = "Starting MediaFrameSourceGroups...";
 
             // Photo video
             Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Starting the media frame source group");
             await _pvMediaFrameSourceGroup.StartAsync();
             _mediaFrameSourceGroupsStarted = true;
 
-            myText.text = "MediaFrameSourceGroups started...";
+            debugText.text = "MediaFrameSourceGroups started...";
 
             // Initialize the Unity coordinate system Get pointer to Unity's spatial coordinate
             // system https://github.com/qian256/HoloLensARToolKit/blob/master/ARToolKitUWP-Unity/Scripts/ARUWPVideo.cs
@@ -226,7 +225,7 @@ namespace ArUcoDetectionHoloLensUnity
                 return;
 
             // Detect ArUco markers in current frame
-            myText.text = "Tracking markers from sensor frames..";
+            debugText.text = "Tracking markers from sensor frames..";
 
             // If no markers in scene, anchor markers to last position
             if (detections.Count == 0)
@@ -305,7 +304,7 @@ namespace ArUcoDetectionHoloLensUnity
             // Bool to indicate closing
             _mediaFrameSourceGroupsStarted = false;
 
-            myText.text = "Stopped streaming sensor frames. Okay to exit app.";
+            debugText.text = "Stopped streaming sensor frames. Okay to exit app.";
 #endif
         }
 

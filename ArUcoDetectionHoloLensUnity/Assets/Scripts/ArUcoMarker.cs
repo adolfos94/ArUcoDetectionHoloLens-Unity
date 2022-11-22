@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class ArUcoMarker
+public class ArUcoMarker : MonoBehaviour
 {
     [Tooltip("Is World Anchored?")]
     public bool isWorldAnchored;

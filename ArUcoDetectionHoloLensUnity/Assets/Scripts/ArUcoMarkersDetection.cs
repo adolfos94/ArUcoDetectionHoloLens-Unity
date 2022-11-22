@@ -107,12 +107,6 @@ namespace ArUcoDetectionHoloLensUnity
         {
             Debug.Log("Started Coroutine at timestamp : " + Time.time);
 
-            // Update Local Scale according to MarkerSize
-            foreach (var trackedObject in trackedObjects)
-            {
-                trackedObject.markerGo.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
-            }
-
             // YieldInstruction that waits for 2 seconds.
             yield return new WaitForSeconds(2);
 
@@ -275,6 +269,10 @@ namespace ArUcoDetectionHoloLensUnity
                     trackedObject.markerGo.transform.SetPositionAndRotation(
                         CvUtils.GetVectorFromMatrix(transformUnityWorld),
                         CvUtils.GetQuatFromMatrix(transformUnityWorld));
+
+                    // Apply marker transform
+                    trackedObject.markerGo.transform.position += trackedObject.transform.position;
+                    trackedObject.markerGo.transform.rotation *= trackedObject.transform.rotation;
                 }
             }
         }

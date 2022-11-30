@@ -1,0 +1,16 @@
+#pragma once
+
+#include "pch.h"
+
+#define STRINGIFY(VAR) #VAR << ": " << VAR << " "
+#define API_EXPORT __declspec(dllexport)
+#define INTERFACE_API __stdcall
+#define EXTERN extern "C"
+
+EXTERN VOID API_EXPORT INTERFACE_API StartArUcoMarkerTracker(
+	CONST IN FLOAT markerSize,
+	CONST IN INT dictId);
+
+EXTERN VOID API_EXPORT INTERFACE_API DetectArUcoMarkers(
+	void* dataPtr,
+	Resolution resolution);

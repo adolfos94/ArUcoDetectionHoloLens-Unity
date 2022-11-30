@@ -1,11 +1,13 @@
-﻿using CameraCapture;
+﻿using ArUcoDetectionHoloLensUnity;
+using CameraCapture;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class ArUcoTracker : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public float markerSize;
+    public CvUtils.ArUcoDictionaryName arUcoDictionaryName;
 
     private CameraCapture.CameraCapture cameraCapture;
     private SpatialCameraTracker spatialCameraTracker;
@@ -16,11 +18,14 @@ public class ArUcoTracker : MonoBehaviour
         spatialCameraTracker = GetComponent<SpatialCameraTracker>();
 
         cameraCapture.CameraTracker = spatialCameraTracker;
+        cameraCapture.onProcessFrame = OnProcessFrame;
         cameraCapture.OnCameraPreview();
+
+        ArUcoTrackerWrapper.StartArUcoMarkerTracker(markerSize, (int)arUcoDictionaryName);
     }
 
-    // Update is called once per frame
-    private void Update()
+    private void OnProcessFrame(CameraParameters cameraParameters)
     {
+        ArUcoTrackerWrapper.DetectArUcoMarkers(cameraParameters);
     }
 }

@@ -20,16 +20,15 @@ namespace CameraCapture
         public SpatialCameraTracker CameraTracker = null;
 
         public Renderer VideoRenderer = null;
-        public CameraParameters cameraParameters;
 
         private Texture2D videoTexture = null;
-
+        private CameraParameters cameraParameters;
         private IntPtr spatialCoordinateSystemPtr = IntPtr.Zero;
 
         private TaskCompletionSource<Wrapper.CaptureState> startPreviewCompletionSource = null;
         private TaskCompletionSource<Wrapper.CaptureState> stopCompletionSource = null;
 
-        public delegate void OnProcessFrame();
+        public delegate void OnProcessFrame(CameraParameters cameraParameters);
 
         public OnProcessFrame onProcessFrame;
 
@@ -133,7 +132,7 @@ namespace CameraCapture
                 return;
             }
 
-            onProcessFrame?.Invoke();
+            onProcessFrame?.Invoke(cameraParameters);
         }
 
         private void OnPreviewFrameUpdated(Wrapper.CaptureState state)

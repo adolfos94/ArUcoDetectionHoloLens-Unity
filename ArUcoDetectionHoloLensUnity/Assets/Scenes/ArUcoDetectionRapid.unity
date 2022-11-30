@@ -717,6 +717,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 841673868a9f67945ac160cf1194a8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  markerSize: 0.046
+  arUcoDictionaryName: 7
 --- !u!4 &1471602562
 Transform:
   m_ObjectHideFlags: 0

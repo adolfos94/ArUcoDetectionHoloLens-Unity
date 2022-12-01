@@ -3,6 +3,7 @@ using CameraCapture;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows.WebCam;
 
 public class ArUcoTracker : MonoBehaviour
 {
@@ -42,13 +43,13 @@ public class ArUcoTracker : MonoBehaviour
         spatialCameraTracker = GetComponent<SpatialCameraTracker>();
 
         cameraCapture.CameraTracker = spatialCameraTracker;
-        cameraCapture.onCameraParameters = onCameraParameters;
+        cameraCapture.onCameraParameters = OnCameraParameters;
         cameraCapture.onProcessFrame = OnProcessFrame;
 
         cameraCapture.CameraPreview();
     }
 
-    private void onCameraParameters(CameraParameters cameraParameters)
+    private void OnCameraParameters(CameraParameters cameraParameters)
     {
         ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams);
         ArUcoTrackerWrapper.StartArUcoMarkerTracker(markerSize, (int)arUcoDictionaryName);

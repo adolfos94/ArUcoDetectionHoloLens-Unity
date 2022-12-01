@@ -160,10 +160,10 @@ namespace CameraCapture
                     Debug.Log("Video texture does not match the size requested, using " + state.width + " x " + state.height);
                 }
 
-                videoTexture = Texture2D.CreateExternalTexture(state.width, state.height, TextureFormat.BGRA32, false, false, state.imgTexture);
+                videoTexture = Texture2D.CreateExternalTexture(state.width, state.height, TextureFormat.RGB24, false, false, state.imgTexture);
 
                 // Create Resources for Proccessing
-                cameraParameters.data = new NativeArray<byte>(state.width * state.height * 4, Allocator.Persistent);
+                cameraParameters.data = new NativeArray<byte>(state.width * state.height * 3, Allocator.Persistent);
                 cameraParameters.resolution.width = state.width;
                 cameraParameters.resolution.height = state.height;
 

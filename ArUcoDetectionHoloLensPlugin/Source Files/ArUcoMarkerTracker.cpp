@@ -1,7 +1,7 @@
 #include "ArUcoMarkerTracker.h"
 
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
-	CONST IN CameraParameters& cameraParams,
+	IN CameraParameters& cameraParams,
 	OUT DetectedArUcoMarker* detectedMarkers)
 {
 	if (!cameraParams.data)
@@ -19,11 +19,11 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	cv::Mat wrappedMat = cv::Mat(
 		cameraParams.resolution.height,
 		cameraParams.resolution.width,
-		CV_8UC4, cameraParams.data);
+		CV_8UC3, cameraParams.data);
 
 	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
-	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_BGRA2GRAY);
+	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_RGB2GRAY);
 
 	// Detect markers
 	std::vector<int32_t> markerIds;
@@ -53,12 +53,9 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 		rVecs,
 		tVecs);
 
-	// Iterate across the detected marker
-	cv::aruco::drawDetectedMarkers(grayMat, markers, markerIds);
+	// Iterate across the detected markers
 	for (size_t i = 0; i < markerIds.size(); i++)
 	{
-		cv::drawFrameAxes(grayMat, cameraParams.cameraMatrix, cameraParams.distCoeffs, rVecs[i], tVecs[i], 0.1);
-
 		// Add the marker
 		detectedMarkers[i].id = markerIds[i];
 
@@ -70,10 +67,6 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 		detectedMarkers[i].rVecs[1] = (float)rVecs[i][1];
 		detectedMarkers[i].rVecs[2] = (float)rVecs[i][2];
 	}
-
-	cv::aruco::drawDetectedMarkers(grayMat, markers, markerIds);
-	cv::imshow("Detected Markers", grayMat);
-	cv::waitKey(1);
 }
 
 ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId)

@@ -10,7 +10,7 @@ public:
 	ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId);
 
 	VOID DetectArUcoMarkersInFrame(
-		CONST IN CameraParameters& cameraParams,
+		IN CameraParameters& cameraParams,
 		OUT DetectedArUcoMarker* detectedMarkers);
 
 private:

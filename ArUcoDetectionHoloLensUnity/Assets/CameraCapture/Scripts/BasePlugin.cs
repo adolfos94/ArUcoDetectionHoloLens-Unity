@@ -271,7 +271,7 @@ namespace CameraCapture
             UnityEngine.WSA.Application.InvokeOnAppThread(() =>
             {
                 OnStateChanged(args);
-            }, true);
+            }, false);
 #else
             // there is still a chance the callback is on a non AppThread(callbacks genereated from WaitForEndOfFrame are not)
             // this will process the callback on AppThread on a FixedUpdate

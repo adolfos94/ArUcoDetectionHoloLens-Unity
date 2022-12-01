@@ -1,9 +1,6 @@
-﻿using ArUcoDetectionHoloLensUnity;
-using CameraCapture;
-using System.Collections;
-using System.Collections.Generic;
+using ArUcoDetectionHoloLensUnity;
+using System;
 using UnityEngine;
-using UnityEngine.Windows.WebCam;
 
 public class ArUcoTracker : MonoBehaviour
 {
@@ -70,20 +67,28 @@ public class ArUcoTracker : MonoBehaviour
                 if (tracked.id != detected.id)
                     continue;
 
-                // Get pose from OpenCV and format for Unity
-                Vector3 position = detected.tVecs;
-                position.y *= -1f;
-                Quaternion rotation = CvUtils.RotationQuatFromRodrigues(detected.rVecs);
-                Matrix4x4 transformUnityCamera = CvUtils.TransformInUnitySpace(position, rotation);
-
-                // Use camera to world transform to get world pose of marker
-                Matrix4x4 transformUnityWorld = cameraToWorldMatrix * transformUnityCamera;
-
-                // Apply updated transform to gameobject in world
-                tracked.markerGo.transform.SetPositionAndRotation(
-                    CvUtils.GetVectorFromMatrix(transformUnityWorld),
-                    CvUtils.GetQuatFromMatrix(transformUnityWorld));
+                TransformMarkerToWorldCoordiantes(detected, tracked, cameraToWorldMatrix);
             }
         }
+    }
+
+    private void TransformMarkerToWorldCoordiantes(
+        DetectedArUcoMarker detected,
+        ArUcoMarker tracked,
+        Matrix4x4 cameraToWorldMatrix)
+    {
+        // Get pose from OpenCV and format for Unity
+        Vector3 position = detected.tVecs;
+        position.y *= -1f;
+        Quaternion rotation = CvUtils.RotationQuatFromRodrigues(detected.rVecs);
+        Matrix4x4 transformUnityCamera = CvUtils.TransformInUnitySpace(position, rotation);
+
+        // Use camera to world transform to get world pose of marker
+        Matrix4x4 transformUnityWorld = cameraToWorldMatrix * transformUnityCamera;
+
+        // Apply updated transform to gameobject in world
+        tracked.markerGo.transform.SetPositionAndRotation(
+            CvUtils.GetVectorFromMatrix(transformUnityWorld),
+            CvUtils.GetQuatFromMatrix(transformUnityWorld));
     }
 }

@@ -1,19 +1,11 @@
 #include "ArUcoMarkerTracker.h"
 
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
-	IN CameraParameters& cameraParams,
+	CONST IN CameraParameters& cameraParams,
 	OUT DetectedArUcoMarker* detectedMarkers)
 {
 	if (!cameraParams.data)
 		return;
-
-	// Create the aruco dictionary from id
-	cv::Ptr<cv::aruco::Dictionary> dictionary =
-		cv::aruco::getPredefinedDictionary(dictId);
-
-	// Create detector parameters
-	cv::Ptr<cv::aruco::DetectorParameters> detectorParams
-		= cv::aruco::DetectorParameters::create();
 
 	// Create cv::Mat from sensor frame
 	cv::Mat wrappedMat = cv::Mat(
@@ -69,8 +61,11 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	}
 }
 
-ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId)
+ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId) : markerSize(markerSize)
 {
-	this->markerSize = markerSize;
-	this->dictId = dictId;
+	// Create the aruco dictionary from id
+	dictionary = cv::aruco::getPredefinedDictionary(dictId);
+
+	// Create detector parameters
+	detectorParams = cv::aruco::DetectorParameters::create();
 }

@@ -10,11 +10,16 @@ public:
 	ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId);
 
 	VOID DetectArUcoMarkersInFrame(
-		IN CameraParameters& cameraParams,
+		CONST IN CameraParameters& cameraParams,
 		OUT DetectedArUcoMarker* detectedMarkers);
 
 private:
 
 	float markerSize;
-	int dictId;
+
+	// ArUco Dictionary.
+	cv::Ptr<cv::aruco::Dictionary> dictionary;
+
+	// Detector Parameters.
+	cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
 };

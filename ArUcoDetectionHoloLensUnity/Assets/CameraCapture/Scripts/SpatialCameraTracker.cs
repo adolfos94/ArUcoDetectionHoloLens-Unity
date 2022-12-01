@@ -8,9 +8,8 @@ public class SpatialCameraTracker : MonoBehaviour
     private Spatial4x4 cameraTransform = Spatial4x4.Zero;
     private Spatial4x4 cameraProjection = Spatial4x4.Zero;
 
-    public delegate void OnSpatialFrameUpdated(Matrix4x4 projectionMatrix, Matrix4x4 cameraToWorldMatrix);
-
-    public OnSpatialFrameUpdated onSpatialFrameUpdated;
+    public Matrix4x4? transformMatrix = null;
+    public Matrix4x4? projectionMatrix = null;
 
     private void Awake()
     {
@@ -30,11 +29,9 @@ public class SpatialCameraTracker : MonoBehaviour
         cameraTransform = transform;
         cameraProjection = projection;
 
-        Matrix4x4? transformMatrix = null;
         if (cameraTransform != Spatial4x4.Zero)
             transformMatrix = cameraTransform.ToUnityTransform();
 
-        UnityEngine.Matrix4x4? projectionMatrix = null;
         if (cameraProjection != Spatial4x4.Zero)
             projectionMatrix = cameraProjection.ToUnity();
 
@@ -43,9 +40,6 @@ public class SpatialCameraTracker : MonoBehaviour
             projectionMatrix = Camera.main.projectionMatrix;
             transformMatrix = Camera.main.cameraToWorldMatrix;
         }
-
-        // Send Matrixes for Proccesing
-        onSpatialFrameUpdated?.Invoke(projectionMatrix.Value, transformMatrix.Value);
 
         return transformMatrix.Value.ValidTRS();
     }

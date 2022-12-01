@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using static CameraCapture.CameraCapture;
 
 namespace CameraCapture
 {
@@ -28,11 +29,15 @@ namespace CameraCapture
         private TaskCompletionSource<Wrapper.CaptureState> startPreviewCompletionSource = null;
         private TaskCompletionSource<Wrapper.CaptureState> stopCompletionSource = null;
 
-        public delegate void OnProcessFrame(CameraParameters cameraParameters);
+        public delegate void OnCameraParameters(CameraParameters cameraParameters);
+
+        public OnCameraParameters onCameraParameters;
+
+        public delegate void OnProcessFrame(Matrix4x4 cameraToWorldMatrix);
 
         public OnProcessFrame onProcessFrame;
 
-        public void OnCameraPreview()
+        public void CameraPreview()
         {
             if (EnabledPreview == false)
             {
@@ -132,14 +137,11 @@ namespace CameraCapture
                 return;
             }
 
-            onProcessFrame?.Invoke(cameraParameters);
+            onProcessFrame?.Invoke(CameraTracker.transformMatrix.Value);
         }
 
         private void OnPreviewFrameUpdated(Wrapper.CaptureState state)
         {
-            if (!cameraParameters.data.IsCreated)
-                return;
-
             if (!CameraTracker.UpdateCameraMatrices(state.cameraWorld, state.cameraProjection))
                 return;
 
@@ -164,6 +166,8 @@ namespace CameraCapture
                 cameraParameters.data = new NativeArray<byte>(state.width * state.height * 4, Allocator.Persistent);
                 cameraParameters.resolution.width = state.width;
                 cameraParameters.resolution.height = state.height;
+
+                onCameraParameters?.Invoke(cameraParameters);
 
                 sizeChanged = true;
 

@@ -13,8 +13,6 @@ EXTERN VOID API_EXPORT INTERFACE_API SetCameraParameters(
 	float* cameraMatrix,
 	float* distCoeff);
 
-EXTERN VOID API_EXPORT INTERFACE_API StartArUcoMarkerTracker(
-	CONST IN FLOAT markerSize,
-	CONST IN INT dictId);
+EXTERN VOID API_EXPORT INTERFACE_API StartArUcoMarkerTracker(CONST IN INT dictId);
 
-EXTERN VOID API_EXPORT INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers);
+EXTERN VOID API_EXPORT INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers, IN INT numDetectObjects);

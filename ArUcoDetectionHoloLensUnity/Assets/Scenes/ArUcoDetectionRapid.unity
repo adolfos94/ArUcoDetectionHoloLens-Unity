@@ -344,52 +344,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 321189651}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &898502947
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 898502949}
-  - component: {fileID: 898502948}
-  m_Layer: 0
-  m_Name: 202
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &898502948
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 898502947}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f445c38e9aaeb2d43a92f67757a434db, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isWorldAnchored: 0
-  id: 202
-  markerGo: {fileID: 2126752553}
---- !u!4 &898502949
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 898502947}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &954116398
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +375,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWorldAnchored: 0
   id: 201
+  markerSize: 0.046
   markerGo: {fileID: 259711858}
 --- !u!4 &954116400
 Transform:
@@ -658,6 +613,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isWorldAnchored: 0
   id: 205
+  markerSize: 0.046
   markerGo: {fileID: 321189652}
 --- !u!4 &1239270956
 Transform:
@@ -671,7 +627,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1267484958
 GameObject:
@@ -957,13 +913,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 841673868a9f67945ac160cf1194a8b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  markerSize: 0.046
   arUcoDictionaryName: 7
   calibParams: {fileID: 1471602565}
   trackedObjects:
   - {fileID: 954116399}
-  - {fileID: 898502948}
   - {fileID: 1239270955}
+  - {fileID: 1880036384}
 --- !u!4 &1471602562
 Transform:
   m_ObjectHideFlags: 0
@@ -1072,6 +1027,53 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1880036383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1880036385}
+  - component: {fileID: 1880036384}
+  m_Layer: 0
+  m_Name: 300
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1880036384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1880036383}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f445c38e9aaeb2d43a92f67757a434db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isWorldAnchored: 0
+  id: 300
+  markerSize: 0.15
+  markerGo: {fileID: 2126752553}
+--- !u!4 &1880036385
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1880036383}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1941422608
 GameObject:
   m_ObjectHideFlags: 0
@@ -1118,17 +1120,17 @@ PrefabInstance:
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.046
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.046
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.046
+      value: 0.15
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}

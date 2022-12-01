@@ -2,7 +2,8 @@
 
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	CONST IN CameraParameters& cameraParams,
-	OUT DetectedArUcoMarker* detectedMarkers)
+	OUT DetectedArUcoMarker* detectedMarkers,
+	IN INT numDetectObjects)
 {
 	if (!cameraParams.data)
 		return;
@@ -32,36 +33,44 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	if (markerIds.empty())
 		return;
 
-	// Vectors for pose (translation and rotation) estimation
-	std::vector<cv::Vec3d> rVecs;
-	std::vector<cv::Vec3d> tVecs;
-
-	// Estimate pose of single markers
-	cv::aruco::estimatePoseSingleMarkers(
-		markers,
-		markerSize,
-		cameraParams.cameraMatrix,
-		cameraParams.distCoeffs,
-		rVecs,
-		tVecs);
-
-	// Iterate across the detected markers
-	for (size_t i = 0; i < markerIds.size(); i++)
+	// Iterate accross the detected markers.
+	for (int i = 0; i < numDetectObjects; ++i)
 	{
-		// Add the marker
-		detectedMarkers[i].id = markerIds[i];
+		for (size_t j = 0; j < markerIds.size(); j++)
+		{
+			// Match markers
+			if (detectedMarkers[i].markerId != markerIds[j])
+				continue;
 
-		detectedMarkers[i].tVecs[0] = (float)tVecs[i][0];
-		detectedMarkers[i].tVecs[1] = (float)tVecs[i][1];
-		detectedMarkers[i].tVecs[2] = (float)tVecs[i][2];
+			std::vector<std::vector<cv::Point2f>> marker = { markers[j] };
 
-		detectedMarkers[i].rVecs[0] = (float)rVecs[i][0];
-		detectedMarkers[i].rVecs[1] = (float)rVecs[i][1];
-		detectedMarkers[i].rVecs[2] = (float)rVecs[i][2];
+			// Vectors for pose (translation and rotation) estimation
+			std::vector<cv::Vec3d> rVecs;
+			std::vector<cv::Vec3d> tVecs;
+
+			// Estimate pose of single marker
+			cv::aruco::estimatePoseSingleMarkers(
+				marker,
+				detectedMarkers[i].markerSize,
+				cameraParams.cameraMatrix,
+				cameraParams.distCoeffs,
+				rVecs,
+				tVecs);
+
+			detectedMarkers[i].tVecs[0] = (float)tVecs[0][0];
+			detectedMarkers[i].tVecs[1] = (float)tVecs[0][1];
+			detectedMarkers[i].tVecs[2] = (float)tVecs[0][2];
+
+			detectedMarkers[i].rVecs[0] = (float)rVecs[0][0];
+			detectedMarkers[i].rVecs[1] = (float)rVecs[0][1];
+			detectedMarkers[i].rVecs[2] = (float)rVecs[0][2];
+
+			detectedMarkers[i].tracked = true;
+		}
 	}
 }
 
-ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId) : markerSize(markerSize)
+ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN INT dictId)
 {
 	// Create the aruco dictionary from id
 	dictionary = cv::aruco::getPredefinedDictionary(dictId);

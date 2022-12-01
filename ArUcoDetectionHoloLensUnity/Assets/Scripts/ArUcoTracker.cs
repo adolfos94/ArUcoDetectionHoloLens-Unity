@@ -1,20 +1,19 @@
 using ArUcoDetectionHoloLensUnity;
 using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class ArUcoTracker : MonoBehaviour
 {
+    [StructLayout(LayoutKind.Sequential)]
     public struct DetectedArUcoMarker
     {
-        public int id;
+        public byte tracked;
+        public int markerId;
+        public float markerSize;
         public Vector3 tVecs;
         public Vector3 rVecs;
     }
-
-    /// <summary>
-    /// Size of the marker in meters.
-    /// </summary>
-    public float markerSize;
 
     /// <summary>
     /// ArUco Dictionary Name to get tracked.
@@ -49,26 +48,29 @@ public class ArUcoTracker : MonoBehaviour
     private void OnCameraParameters(CameraParameters cameraParameters)
     {
         ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams);
-        ArUcoTrackerWrapper.StartArUcoMarkerTracker(markerSize, (int)arUcoDictionaryName);
+        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName);
     }
 
     private void OnProcessFrame(Matrix4x4 cameraToWorldMatrix)
     {
-        DetectedArUcoMarker[] detectedObjects = new DetectedArUcoMarker[5];
-        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects);
+        DetectedArUcoMarker[] detectedObjects = new DetectedArUcoMarker[trackedObjects.Length];
 
-        foreach (var detected in detectedObjects)
+        for (int i = 0; i < trackedObjects.Length; ++i)
         {
-            if (detected.id == 0)
+            detectedObjects[i].markerId = trackedObjects[i].id;
+            detectedObjects[i].markerSize = trackedObjects[i].markerSize;
+
+            // Fill mesh?
+        }
+
+        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects, trackedObjects.Length);
+
+        for (int i = 0; i < trackedObjects.Length; ++i)
+        {
+            if (detectedObjects[i].tracked == 0x0)
                 continue;
 
-            foreach (var tracked in trackedObjects)
-            {
-                if (tracked.id != detected.id)
-                    continue;
-
-                TransformMarkerToWorldCoordiantes(detected, tracked, cameraToWorldMatrix);
-            }
+            TransformMarkerToWorldCoordiantes(detectedObjects[i], trackedObjects[i], cameraToWorldMatrix);
         }
     }
 

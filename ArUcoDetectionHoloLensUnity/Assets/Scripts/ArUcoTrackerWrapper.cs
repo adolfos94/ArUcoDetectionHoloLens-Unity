@@ -24,8 +24,8 @@ public class ArUcoTrackerWrapper
         float[] distCoeff);
 
     [DllImport("ArUcoDetectionPlugin", CallingConvention = CallingConvention.StdCall)]
-    public static extern void StartArUcoMarkerTracker(float markerSize, int dictId);
+    public static extern void StartArUcoMarkerTracker(int dictId);
 
     [DllImport("ArUcoDetectionPlugin", CallingConvention = CallingConvention.StdCall)]
-    public static extern void DetectArUcoMarkers(ArUcoTracker.DetectedArUcoMarker[] detectedArUcoMarkers);
+    public static extern void DetectArUcoMarkers(ArUcoTracker.DetectedArUcoMarker[] detectedArUcoMarkers, int numDetectObjects);
 }

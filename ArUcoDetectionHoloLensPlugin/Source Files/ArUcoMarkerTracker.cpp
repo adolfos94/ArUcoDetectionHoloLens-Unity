@@ -1,5 +1,44 @@
 #include "ArUcoMarkerTracker.h"
 
+VOID ArUcoMarkerTracker::RefineArUcoMarkerTracker(
+	CONST IN CameraParameters& cameraParams,
+	CONST IN FLOAT* vertexes, CONST IN INT nVertexes,
+	CONST IN INT* triangles, CONST IN INT nTriangles,
+	OUT DetectedArUcoMarker& detectedMarker)
+{
+	if (!cameraParams.data || !vertexes || !triangles)
+		return;
+
+	// Vectors for rapid pose computation.
+	std::vector<cv::Vec3f> pts3d(nVertexes);
+	std::vector<cv::Vec3i> tris(nTriangles);
+
+	for (int i = 0; i < nVertexes; ++i)
+	{
+		pts3d[i] = { vertexes[(i * 3) + 0], vertexes[(i * 3) + 1], vertexes[(i * 3) + 2] };
+
+		if (i < nTriangles)
+			tris[i] = { triangles[(i * 3) + 0], triangles[(i * 3) + 1], triangles[(i * 3) + 2] };
+	}
+
+	// Vectors for pose (translation and rotation) refinement
+	cv::Vec3f rVec;
+	cv::Vec3f tVec;
+
+	rVec = { detectedMarker.rVecs[0], detectedMarker.rVecs[1], detectedMarker.rVecs[2] };
+	tVec = { detectedMarker.tVecs[0], detectedMarker.tVecs[1], detectedMarker.tVecs[2] };
+
+	// Create cv::Mat from sensor frame
+	cv::Mat wrappedMat = cv::Mat(
+		cameraParams.resolution.height,
+		cameraParams.resolution.width,
+		CV_8UC3, cameraParams.data);
+
+	auto ratio = cv::rapid::rapid(
+		wrappedMat, 100, 15, pts3d, tris,
+		cameraParams.cameraMatrix, rVec, tVec);
+}
+
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	CONST IN CameraParameters& cameraParams,
 	OUT DetectedArUcoMarker* detectedMarkers,

@@ -14,6 +14,12 @@ public:
 		OUT DetectedArUcoMarker* detectedMarkers,
 		IN INT numDetectObjects);
 
+	VOID RefineArUcoMarkerTracker(
+		CONST IN CameraParameters& cameraParams,
+		CONST IN FLOAT* vertexes, CONST IN INT nVertexes,
+		CONST IN INT* triangles, CONST IN INT nTriangles,
+		OUT DetectedArUcoMarker& detectedMarker);
+
 private:
 
 	// ArUco Dictionary.

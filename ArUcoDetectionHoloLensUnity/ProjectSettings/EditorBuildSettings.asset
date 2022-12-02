@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/ArUcoDetectionRapid.unity
+    path: Assets/Scenes/ArUcoDetection.unity
     guid: c2a3c77e787538349b7eb26a3e9b4a41
   m_configObjects: {}

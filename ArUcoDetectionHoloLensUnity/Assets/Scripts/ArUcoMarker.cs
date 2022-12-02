@@ -1,5 +1,16 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
+
+[StructLayout(LayoutKind.Sequential)]
+public struct DetectedArUcoMarker
+{
+    public byte tracked;
+    public int markerId;
+    public float markerSize;
+    public Vector3 tVecs;
+    public Vector3 rVecs;
+}
 
 [Serializable]
 public class ArUcoMarker : MonoBehaviour

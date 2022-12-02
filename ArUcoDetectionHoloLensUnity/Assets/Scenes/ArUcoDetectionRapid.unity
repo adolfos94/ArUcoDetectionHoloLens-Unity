@@ -892,8 +892,8 @@ GameObject:
   - component: {fileID: 1471602562}
   - component: {fileID: 1471602564}
   - component: {fileID: 1471602563}
-  - component: {fileID: 1471602561}
   - component: {fileID: 1471602565}
+  - component: {fileID: 1471602561}
   m_Layer: 0
   m_Name: -- ArUcoTracker --
   m_TagString: Untagged
@@ -910,15 +910,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1471602560}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 841673868a9f67945ac160cf1194a8b2, type: 3}
+  m_Script: {fileID: 11500000, guid: f84ed1638fe7fa54a9cae50b7e0b87af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   arUcoDictionaryName: 7
   calibParams: {fileID: 1471602565}
   trackedObjects:
-  - {fileID: 954116399}
   - {fileID: 1239270955}
-  - {fileID: 1880036384}
 --- !u!4 &1471602562
 Transform:
   m_ObjectHideFlags: 0

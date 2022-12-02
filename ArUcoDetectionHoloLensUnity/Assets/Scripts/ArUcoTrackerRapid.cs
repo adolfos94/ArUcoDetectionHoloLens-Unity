@@ -1,7 +1,9 @@
-using ArUcoDetectionHoloLensUnity;
+﻿using ArUcoDetectionHoloLensUnity;
+using System;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
-public class ArUcoTracker : MonoBehaviour
+public class ArUcoTrackerRapid : MonoBehaviour
 {
     /// <summary>
     /// ArUco Dictionary Name to get tracked.
@@ -56,8 +58,46 @@ public class ArUcoTracker : MonoBehaviour
             if (detectedObjects[i].tracked == 0x0)
                 continue;
 
+            Vector3[] vertices;
+            int[] triangles;
+
+            GenerateMeshBuffers(trackedObjects[i], out vertices, out triangles);
+
+            ArUcoTrackerWrapper.RefineArUcoMarkerTracker(
+                vertices, vertices.Length,
+                triangles, triangles.Length / 3,
+                ref detectedObjects[i]);
+
             TransformMarkerToWorldCoordiantes(trackedObjects[i], detectedObjects[i], cameraToWorldMatrix);
         }
+    }
+
+    private void GenerateMeshBuffers(
+        ArUcoMarker tracked,
+        out Vector3[] vertices,
+        out int[] triangles)
+    {
+        // Fill mesh?
+        MeshFilter[] meshFilters = tracked.markerGo.GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
+
+        Matrix4x4 transform = Matrix4x4.TRS(
+            tracked.transform.position,
+            tracked.transform.rotation,
+            Vector3.one);
+
+        for (int i = 0; i < meshFilters.Length; ++i)
+        {
+            combineInstances[i].mesh = meshFilters[i].sharedMesh;
+            combineInstances[i].transform = transform;
+        }
+
+        Mesh mesh = new Mesh();
+        mesh.CombineMeshes(combineInstances);
+        mesh.Optimize();
+
+        vertices = mesh.vertices;
+        triangles = mesh.triangles;
     }
 
     private void TransformMarkerToWorldCoordiantes(

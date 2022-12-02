@@ -35,7 +35,7 @@ public class SpatialCameraTracker : MonoBehaviour
         if (cameraProjection != Spatial4x4.Zero)
             projectionMatrix = cameraProjection.ToUnity();
 
-        if (transformMatrix == null || projectionMatrix == null)
+        //if (transformMatrix == null || projectionMatrix == null)
         {
             projectionMatrix = Camera.main.projectionMatrix;
             transformMatrix = Camera.main.cameraToWorldMatrix;

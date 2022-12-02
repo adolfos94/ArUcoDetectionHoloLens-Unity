@@ -14,7 +14,8 @@ namespace ArUcoDetectionHoloLensUnity
         }
 
         // https://docs.opencv.org/trunk/dc/df7/dictionary_8hpp.html
-        public enum ArUcoDictionaryName {
+        public enum ArUcoDictionaryName
+        {
             DICT_4X4_50 = 0,
             DICT_4X4_100,
             DICT_4X4_250,
@@ -125,7 +126,7 @@ namespace ArUcoDetectionHoloLensUnity
             var axis = v.normalized;
             Quaternion q = Quaternion.AngleAxis(angle, axis);
 
-            // Ensure: 
+            // Ensure:
             // Positive x axis is in the left direction of the observed marker
             // Positive y axis is in the upward direction of the observed marker
             // Positive z axis is facing outward from the observed marker
@@ -139,4 +140,3 @@ namespace ArUcoDetectionHoloLensUnity
         }
     }
 }
-

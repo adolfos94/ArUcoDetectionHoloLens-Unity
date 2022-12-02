@@ -59,24 +59,43 @@ public class ArUcoTracker : MonoBehaviour
         {
             detectedObjects[i].markerId = trackedObjects[i].id;
             detectedObjects[i].markerSize = trackedObjects[i].markerSize;
-
-            // Fill mesh?
         }
 
         ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects, trackedObjects.Length);
 
-        for (int i = 0; i < trackedObjects.Length; ++i)
+        for (int i = 0; i < detectedObjects.Length; ++i)
         {
             if (detectedObjects[i].tracked == 0x0)
                 continue;
 
-            TransformMarkerToWorldCoordiantes(detectedObjects[i], trackedObjects[i], cameraToWorldMatrix);
+            TransformMarkerToWorldCoordiantes(trackedObjects[i], detectedObjects[i], cameraToWorldMatrix);
         }
     }
 
+    private void FillVertexBuffers(Vector3[] vertices, int[] triangles)
+    {
+        // Fill mesh?
+        //MeshFilter[] meshFilters = trackedObjects[i].markerGo.GetComponentsInChildren<MeshFilter>();
+        //CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
+
+        //Matrix4x4 transform = Matrix4x4.Scale(new Vector3(1f, 1f, 1f));
+
+        //for (int i = 0; i < meshFilters.Length; ++i)
+        //{
+        //    combineInstances[i].mesh = meshFilters[i].sharedMesh;
+        //    combineInstances[i].transform = transform;
+        //}
+
+        //Mesh mesh = new Mesh();
+        //mesh.CombineMeshes(combineInstances);
+
+        //Vector3[] vertices = mesh.vertices;
+        //int[] triangles = mesh.triangles;
+    }
+
     private void TransformMarkerToWorldCoordiantes(
-        DetectedArUcoMarker detected,
         ArUcoMarker tracked,
+        DetectedArUcoMarker detected,
         Matrix4x4 cameraToWorldMatrix)
     {
         // Get pose from OpenCV and format for Unity
@@ -92,5 +111,9 @@ public class ArUcoTracker : MonoBehaviour
         tracked.markerGo.transform.SetPositionAndRotation(
             CvUtils.GetVectorFromMatrix(transformUnityWorld),
             CvUtils.GetQuatFromMatrix(transformUnityWorld));
+
+        // Apply relative position between marker and pivot
+        tracked.markerGo.transform.Translate(tracked.transform.position);
+        tracked.markerGo.transform.Rotate(tracked.transform.rotation.eulerAngles);
     }
 }

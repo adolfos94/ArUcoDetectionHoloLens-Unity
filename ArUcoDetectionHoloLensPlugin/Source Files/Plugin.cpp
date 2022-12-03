@@ -28,14 +28,12 @@ VOID INTERFACE_API SetCameraParameters(
 	cameraParameters.distCoeffs.at<double>(0, 3) = distCoeff[4];
 }
 
-VOID INTERFACE_API StartArUcoMarkerTracker(
-	CONST IN FLOAT markerSize,
-	CONST IN INT dictId)
+VOID INTERFACE_API StartArUcoMarkerTracker(CONST IN INT dictId)
 {
-	arUcoMarkertracker = ArUcoMarkerTracker(markerSize, dictId);
+	arUcoMarkertracker = ArUcoMarkerTracker(dictId);
 }
 
-VOID INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers)
+VOID INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers, IN INT numDetectObjects)
 {
-	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers);
+	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers, numDetectObjects);
 }

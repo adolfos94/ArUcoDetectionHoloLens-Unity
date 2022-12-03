@@ -7,15 +7,14 @@ class ArUcoMarkerTracker
 public:
 
 	ArUcoMarkerTracker() {};
-	ArUcoMarkerTracker(CONST IN FLOAT markerSize, CONST IN INT dictId);
+	ArUcoMarkerTracker(CONST IN INT dictId);
 
 	VOID DetectArUcoMarkersInFrame(
 		CONST IN CameraParameters& cameraParams,
-		OUT DetectedArUcoMarker* detectedMarkers);
+		OUT DetectedArUcoMarker* detectedMarkers,
+		IN INT numDetectObjects);
 
 private:
-
-	float markerSize;
 
 	// ArUco Dictionary.
 	cv::Ptr<cv::aruco::Dictionary> dictionary;

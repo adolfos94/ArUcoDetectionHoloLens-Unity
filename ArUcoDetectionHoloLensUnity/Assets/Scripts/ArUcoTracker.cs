@@ -1,21 +1,8 @@
 using ArUcoDetectionHoloLensUnity;
-using System;
 using UnityEngine;
 
 public class ArUcoTracker : MonoBehaviour
 {
-    public struct DetectedArUcoMarker
-    {
-        public int id;
-        public Vector3 tVecs;
-        public Vector3 rVecs;
-    }
-
-    /// <summary>
-    /// Size of the marker in meters.
-    /// </summary>
-    public float markerSize;
-
     /// <summary>
     /// ArUco Dictionary Name to get tracked.
     /// </summary>
@@ -49,32 +36,33 @@ public class ArUcoTracker : MonoBehaviour
     private void OnCameraParameters(CameraParameters cameraParameters)
     {
         ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams);
-        ArUcoTrackerWrapper.StartArUcoMarkerTracker(markerSize, (int)arUcoDictionaryName);
+        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName);
     }
 
     private void OnProcessFrame(Matrix4x4 cameraToWorldMatrix)
     {
-        DetectedArUcoMarker[] detectedObjects = new DetectedArUcoMarker[5];
-        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects);
+        DetectedArUcoMarker[] detectedObjects = new DetectedArUcoMarker[trackedObjects.Length];
 
-        foreach (var detected in detectedObjects)
+        for (int i = 0; i < trackedObjects.Length; ++i)
         {
-            if (detected.id == 0)
+            detectedObjects[i].markerId = trackedObjects[i].id;
+            detectedObjects[i].markerSize = trackedObjects[i].markerSize;
+        }
+
+        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects, trackedObjects.Length);
+
+        for (int i = 0; i < detectedObjects.Length; ++i)
+        {
+            if (detectedObjects[i].tracked == 0x0)
                 continue;
 
-            foreach (var tracked in trackedObjects)
-            {
-                if (tracked.id != detected.id)
-                    continue;
-
-                TransformMarkerToWorldCoordiantes(detected, tracked, cameraToWorldMatrix);
-            }
+            TransformMarkerToWorldCoordiantes(trackedObjects[i], detectedObjects[i], cameraToWorldMatrix);
         }
     }
 
     private void TransformMarkerToWorldCoordiantes(
-        DetectedArUcoMarker detected,
         ArUcoMarker tracked,
+        DetectedArUcoMarker detected,
         Matrix4x4 cameraToWorldMatrix)
     {
         // Get pose from OpenCV and format for Unity
@@ -90,5 +78,9 @@ public class ArUcoTracker : MonoBehaviour
         tracked.markerGo.transform.SetPositionAndRotation(
             CvUtils.GetVectorFromMatrix(transformUnityWorld),
             CvUtils.GetQuatFromMatrix(transformUnityWorld));
+
+        // Apply relative position between marker and pivot
+        tracked.markerGo.transform.Translate(tracked.transform.position);
+        tracked.markerGo.transform.Rotate(tracked.transform.rotation.eulerAngles);
     }
 }

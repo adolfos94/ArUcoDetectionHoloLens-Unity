@@ -7,6 +7,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
+#include <opencv2/rapid.hpp>
 
 struct Resolution
 {
@@ -31,7 +32,9 @@ struct CameraParameters
 
 struct DetectedArUcoMarker
 {
-	int id;
+	bool tracked;
+	int markerId;
+	float markerSize;
 	float tVecs[3];
 	float rVecs[3];
 };

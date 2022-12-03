@@ -1,43 +1,7 @@
 #include "ArUcoMarkerTracker.h"
 
-VOID ArUcoMarkerTracker::RefineArUcoMarkerTracker(
-	CONST IN CameraParameters& cameraParams,
-	CONST IN FLOAT* vertexes, CONST IN INT nVertexes,
-	CONST IN INT* triangles, CONST IN INT nTriangles,
-	OUT DetectedArUcoMarker& detectedMarker)
-{
-	if (!cameraParams.data || !vertexes || !triangles)
-		return;
-
-	// Vectors for rapid pose computation.
-	std::vector<cv::Vec3f> pts3d(nVertexes);
-	std::vector<cv::Vec3i> tris(nTriangles);
-
-	for (int i = 0; i < nVertexes; ++i)
-	{
-		pts3d[i] = { vertexes[(i * 3) + 0], vertexes[(i * 3) + 1], vertexes[(i * 3) + 2] };
-
-		if (i < nTriangles)
-			tris[i] = { triangles[(i * 3) + 0], triangles[(i * 3) + 1], triangles[(i * 3) + 2] };
-	}
-
-	// Vectors for pose (translation and rotation) refinement
-	cv::Vec3f rVec;
-	cv::Vec3f tVec;
-
-	rVec = { detectedMarker.rVecs[0], detectedMarker.rVecs[1], detectedMarker.rVecs[2] };
-	tVec = { detectedMarker.tVecs[0], detectedMarker.tVecs[1], detectedMarker.tVecs[2] };
-
-	// Create cv::Mat from sensor frame
-	cv::Mat wrappedMat = cv::Mat(
-		cameraParams.resolution.height,
-		cameraParams.resolution.width,
-		CV_8UC3, cameraParams.data);
-
-	auto ratio = cv::rapid::rapid(
-		wrappedMat, 100, 15, pts3d, tris,
-		cameraParams.cameraMatrix, rVec, tVec);
-}
+std::vector<cv::Vec3f> Pts3d = { { -0.5, 0.5, 0 }, {0.5, 0.5, 0}, {0.5, -0.5, 0}, {-0.5, -0.5, 0} };
+std::vector<cv::Vec3i> Tri3d = { { 0, 2, 1}, {0, 3, 2} };
 
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	CONST IN CameraParameters& cameraParams,
@@ -96,6 +60,26 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 				rVecs,
 				tVecs);
 
+			std::vector<cv::Vec3f> pts3d(Pts3d.size());
+			std::transform(Pts3d.begin(), Pts3d.end(), pts3d.begin(), [&](cv::Vec3f pt3d)
+				{
+					return pt3d * detectedMarkers[i].markerSize;
+				});
+
+			// Tracking and refinement with rapid
+			bool tracked = true;
+			for (int k = 0; k < 5; ++k)
+			{
+				auto ratio = cv::rapid::rapid(wrappedMat, 50, 10, pts3d, Tri3d,
+					cameraParams.cameraMatrix, rVecs.front(), tVecs.front());
+
+				if (ratio < 0.8f)
+				{
+					tracked = false;
+					break;
+				}
+			}
+
 			detectedMarkers[i].tVecs[0] = (float)tVecs[0][0];
 			detectedMarkers[i].tVecs[1] = (float)tVecs[0][1];
 			detectedMarkers[i].tVecs[2] = (float)tVecs[0][2];
@@ -104,7 +88,7 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			detectedMarkers[i].rVecs[1] = (float)rVecs[0][1];
 			detectedMarkers[i].rVecs[2] = (float)rVecs[0][2];
 
-			detectedMarkers[i].tracked = true;
+			detectedMarkers[i].tracked = tracked;
 		}
 	}
 }

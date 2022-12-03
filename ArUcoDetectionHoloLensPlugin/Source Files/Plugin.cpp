@@ -37,13 +37,3 @@ VOID INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers, 
 {
 	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers, numDetectObjects);
 }
-
-VOID INTERFACE_API RefineArUcoMarkerTracker(
-	CONST IN FLOAT* vertexes, CONST IN INT nVertexes,
-	CONST IN INT* triangles, CONST IN INT nTriangles,
-	OUT DetectedArUcoMarker& detectedMarker)
-{
-	arUcoMarkertracker.RefineArUcoMarkerTracker(
-		cameraParameters, vertexes, nVertexes,
-		triangles, nTriangles, detectedMarker);
-}

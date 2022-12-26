@@ -93,6 +93,81 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	}
 }
 
+VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
+	CONST IN CameraParameters& cameraParams,
+	OUT DetectedArUcoBoard& detectedBoard)
+{
+	if (!cameraParams.data)
+		return;
+
+	// Create cv::Mat from sensor frame
+	cv::Mat wrappedMat = cv::Mat(
+		cameraParams.resolution.height,
+		cameraParams.resolution.width,
+		CV_8UC3, cameraParams.data);
+
+	// Convert cv::Mat to grayscale for detection
+	cv::Mat grayMat;
+	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_RGB2GRAY);
+
+	// Create grid board
+	auto board = cv::aruco::GridBoard::create(
+		detectedBoard.markersX,
+		detectedBoard.markersY,
+		detectedBoard.markerSize,
+		detectedBoard.markerSeparation,
+		dictionary);
+
+	// Detect markers
+	std::vector<int32_t> markerIds;
+	std::vector<std::vector<cv::Point2f>> markers, rejectedCandidates;
+
+	cv::aruco::detectMarkers(
+		grayMat,
+		dictionary,
+		markers,
+		markerIds,
+		detectorParams,
+		rejectedCandidates);
+
+	if (markerIds.empty())
+		return;
+
+	cv::aruco::refineDetectedMarkers(
+		grayMat,
+		board,
+		markers,
+		markerIds,
+		rejectedCandidates,
+		cameraParams.cameraMatrix,
+		cameraParams.distCoeffs);
+
+	if (markerIds.empty())
+		return;
+
+	cv::Vec3d rvec, tvec;
+	auto valid = cv::aruco::estimatePoseBoard(
+		markers,
+		markerIds,
+		board,
+		cameraParams.cameraMatrix,
+		cameraParams.distCoeffs,
+		rvec, tvec);
+
+	if (!valid)
+		return;
+
+	detectedBoard.tVec[0] = (float)tvec[0];
+	detectedBoard.tVec[1] = (float)tvec[1];
+	detectedBoard.tVec[2] = (float)tvec[2];
+
+	detectedBoard.rVec[0] = (float)rvec[0];
+	detectedBoard.rVec[1] = (float)rvec[1];
+	detectedBoard.rVec[2] = (float)rvec[2];
+
+	detectedBoard.tracked = valid ? true : false;
+}
+
 ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN INT dictId)
 {
 	// Create the aruco dictionary from id

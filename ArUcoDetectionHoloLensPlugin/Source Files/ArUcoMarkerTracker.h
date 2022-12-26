@@ -14,6 +14,10 @@ public:
 		OUT DetectedArUcoMarker* detectedMarkers,
 		IN INT numDetectObjects);
 
+	VOID DetectArUCoBoardInFrame(
+		CONST IN CameraParameters& cameraParams,
+		OUT DetectedArUcoBoard& detectedBoard);
+
 private:
 
 	// ArUco Dictionary.

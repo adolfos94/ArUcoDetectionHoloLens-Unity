@@ -38,3 +38,14 @@ struct DetectedArUcoMarker
 	float tVecs[3];
 	float rVecs[3];
 };
+
+struct DetectedArUcoBoard
+{
+	bool tracked;
+	int markersX;
+	int markersY;
+	float markerSize;
+	float markerSeparation;
+	float tVec[3];
+	float rVec[3];
+};

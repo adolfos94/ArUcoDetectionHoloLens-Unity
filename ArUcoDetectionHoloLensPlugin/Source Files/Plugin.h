@@ -18,3 +18,6 @@ EXTERN VOID API_EXPORT INTERFACE_API StartArUcoMarkerTracker(CONST IN INT dictId
 EXTERN VOID API_EXPORT INTERFACE_API DetectArUcoMarkers(
 	OUT DetectedArUcoMarker* detectedMarkers,
 	IN INT numDetectObjects);
+
+EXTERN VOID API_EXPORT INTERFACE_API DetectArUcoBoard(
+	OUT DetectedArUcoBoard& detectedBoard);

@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 1817965922567809019}
   - component: {fileID: 1817965922567809020}
   - component: {fileID: 1817965922567809021}
-  - component: {fileID: 1817965922567809017}
+  - component: {fileID: 4777939336438115156}
   m_Layer: 0
-  m_Name: -- ArUcoTracker --
+  m_Name: -- ArUcoBoardTracker --
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -84,7 +84,7 @@ MonoBehaviour:
   tangentialDistortion: {x: 0, y: 0}
   imageWidth: 1280
   imageHeight: 720
---- !u!114 &1817965922567809017
+--- !u!114 &4777939336438115156
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -93,12 +93,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 1817965922567809016}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 841673868a9f67945ac160cf1194a8b2, type: 3}
+  m_Script: {fileID: 11500000, guid: 6d462d64679ebb64481bcb8cb833a471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  arUcoDictionaryName: 7
+  arUcoDictionaryName: 0
   calibParams: {fileID: 1817965922567809021}
-  trackedObjects:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}

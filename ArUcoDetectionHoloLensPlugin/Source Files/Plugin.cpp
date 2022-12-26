@@ -37,3 +37,8 @@ VOID INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers, 
 {
 	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers, numDetectObjects);
 }
+
+VOID INTERFACE_API DetectArUcoBoard(OUT DetectedArUcoBoard& detectedBoard)
+{
+	arUcoMarkertracker.DetectArUCoBoardInFrame(cameraParameters, detectedBoard);
+}

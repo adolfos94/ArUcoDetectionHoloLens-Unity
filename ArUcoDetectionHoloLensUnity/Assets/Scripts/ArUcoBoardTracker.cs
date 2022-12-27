@@ -13,6 +13,11 @@ public class ArUcoBoardTracker : MonoBehaviour
     /// </summary>
     public CameraCalibrationParams calibParams;
 
+    /// <summary>
+    /// Prefab instances of detected board.
+    /// </summary>
+    public ArUcoBoard trackedBoard;
+
     private CameraCapture.CameraCapture cameraCapture;
     private SpatialCameraTracker spatialCameraTracker;
 
@@ -36,5 +41,42 @@ public class ArUcoBoardTracker : MonoBehaviour
 
     private void OnProcessFrame(Matrix4x4 cameraToWorldMatrix)
     {
+        DetectedArUcoBoard detectedBoard = new DetectedArUcoBoard();
+        detectedBoard.markersX = trackedBoard.markersX;
+        detectedBoard.markersY = trackedBoard.markersY;
+        detectedBoard.markerId = trackedBoard.markerId;
+        detectedBoard.markerSize = trackedBoard.markerSize;
+        detectedBoard.markerSeparation = trackedBoard.markerSeparation;
+
+        ArUcoTrackerWrapper.DetectArUcoBoard(ref detectedBoard);
+
+        if (detectedBoard.tracked == 0x0)
+            return;
+
+        TransformBoardToWorldCoordiantes(trackedBoard, detectedBoard, cameraToWorldMatrix);
+    }
+
+    private void TransformBoardToWorldCoordiantes(
+        ArUcoBoard tracked,
+        DetectedArUcoBoard detected,
+        Matrix4x4 cameraToWorldMatrix)
+    {
+        // Get pose from OpenCV and format for Unity
+        Vector3 position = detected.tVec;
+        position.y *= -1f;
+        Quaternion rotation = CvUtils.RotationQuatFromRodrigues(detected.rVec);
+        Matrix4x4 transformUnityCamera = CvUtils.TransformInUnitySpace(position, rotation);
+
+        // Use camera to world transform to get world pose of marker
+        Matrix4x4 transformUnityWorld = cameraToWorldMatrix * transformUnityCamera;
+
+        // Apply updated transform to gameobject in world
+        tracked.markerGo.transform.SetPositionAndRotation(
+            CvUtils.GetVectorFromMatrix(transformUnityWorld),
+            CvUtils.GetQuatFromMatrix(transformUnityWorld));
+
+        // Apply relative position between marker and pivot
+        tracked.markerGo.transform.Translate(tracked.transform.position);
+        tracked.markerGo.transform.Rotate(tracked.transform.rotation.eulerAngles);
     }
 }

@@ -116,7 +116,7 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 		detectedBoard.markersY,
 		detectedBoard.markerSize,
 		detectedBoard.markerSeparation,
-		dictionary);
+		dictionary, detectedBoard.markerId);
 
 	// Detect markers
 	std::vector<int32_t> markerIds;
@@ -133,6 +133,7 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	if (markerIds.empty())
 		return;
 
+	// Refine detected markers
 	cv::aruco::refineDetectedMarkers(
 		grayMat,
 		board,
@@ -145,6 +146,7 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	if (markerIds.empty())
 		return;
 
+	// Estimate pose board
 	cv::Vec3d rvec, tvec;
 	auto valid = cv::aruco::estimatePoseBoard(
 		markers,
@@ -157,6 +159,7 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	if (!valid)
 		return;
 
+	// If at least one board marker detected
 	detectedBoard.tVec[0] = (float)tvec[0];
 	detectedBoard.tVec[1] = (float)tvec[1];
 	detectedBoard.tVec[2] = (float)tvec[2];

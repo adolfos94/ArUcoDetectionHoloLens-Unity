@@ -30,5 +30,5 @@ public class ArUcoTrackerWrapper
     public static extern void DetectArUcoMarkers(DetectedArUcoMarker[] detectedArUcoMarkers, int numDetectObjects);
 
     [DllImport("ArUcoDetectionPlugin", CallingConvention = CallingConvention.StdCall)]
-    public static extern void DetectArUcoBoard(DetectedArUcoMarker[] detectedArUcoMarkers, int numDetectObjects);
+    public static extern void DetectArUcoBoard(ref DetectedArUcoBoard detectedArUcoMarkers);
 }

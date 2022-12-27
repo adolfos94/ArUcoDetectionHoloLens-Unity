@@ -44,6 +44,7 @@ struct DetectedArUcoBoard
 	bool tracked;
 	int markersX;
 	int markersY;
+	int markerId;
 	float markerSize;
 	float markerSeparation;
 	float tVec[3];

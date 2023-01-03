@@ -360,7 +360,7 @@ GameObject:
   - component: {fileID: 954116400}
   - component: {fileID: 954116399}
   m_Layer: 0
-  m_Name: 204
+  m_Name: 206
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -379,7 +379,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isWorldAnchored: 0
-  id: 204
+  id: 206
   markerSize: 0.046
   markerGo: {fileID: 259711858}
 --- !u!4 &954116400

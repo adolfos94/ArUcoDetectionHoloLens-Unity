@@ -62,13 +62,13 @@ public class ArUcoBoardTracker : MonoBehaviour
         Matrix4x4 cameraToWorldMatrix)
     {
         // Get pose from OpenCV and format for Unity
-        Vector3 position = detected.tVec;
-        position.y *= -1f;
+        Vector3 position = detected.tVec; position.y *= -1f;
         Quaternion rotation = CvUtils.RotationQuatFromRodrigues(detected.rVec);
         Matrix4x4 transformUnityCamera = CvUtils.TransformInUnitySpace(position, rotation);
 
         // Use camera to world transform to get world pose of marker
         Matrix4x4 transformUnityWorld = cameraToWorldMatrix * transformUnityCamera;
+        transformUnityWorld *= Matrix4x4.Scale(new Vector3(1, -1, -1));
 
         // Apply updated transform to gameobject in world
         tracked.markerGo.transform.SetPositionAndRotation(

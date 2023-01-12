@@ -5,6 +5,7 @@ CameraParameters cameraParameters;
 ArUcoMarkerTracker arUcoMarkertracker;
 
 VOID INTERFACE_API SetCameraParameters(
+	bool videoVerticallyMirrored,
 	Resolution resolution,
 	void* dataPtr,
 	float* cameraMatrix,
@@ -12,6 +13,7 @@ VOID INTERFACE_API SetCameraParameters(
 {
 	cameraParameters.data = (byte*)dataPtr;
 	cameraParameters.resolution = resolution;
+	cameraParameters.videoVerticallyMirrored = videoVerticallyMirrored;
 
 	// Set camera intrinsic parameters for pose estimation
 	cameraParameters.cameraMatrix.at<double>(0, 0) = cameraMatrix[0];

@@ -17,6 +17,16 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 		cameraParams.resolution.width,
 		CV_8UC3, cameraParams.data);
 
+	if (cameraParams.videoVerticallyMirrored)
+		cv::flip(wrappedMat, wrappedMat, 0);
+
+#ifndef UWP
+
+	cv::Mat debugMat;
+	cv::cvtColor(wrappedMat, debugMat, cv::COLOR_RGB2BGR);
+
+#endif // !UWP
+
 	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
 	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_RGB2GRAY);
@@ -80,6 +90,17 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 				}
 			}
 
+#ifndef UWP
+
+			cv::drawFrameAxes(
+				debugMat,
+				cameraParams.cameraMatrix,
+				cameraParams.distCoeffs,
+				rVecs.front(), tVecs.front(),
+				detectedMarkers[i].markerSize);
+
+#endif // !UWP
+
 			detectedMarkers[i].tVecs[0] = (float)tVecs[0][0];
 			detectedMarkers[i].tVecs[1] = (float)tVecs[0][1];
 			detectedMarkers[i].tVecs[2] = (float)tVecs[0][2];
@@ -91,6 +112,12 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			detectedMarkers[i].tracked = tracked;
 		}
 	}
+
+#ifndef UWP
+
+	cv::imshow("Debug Sensor Frame", debugMat);
+
+#endif // !UWP
 }
 
 VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
@@ -105,6 +132,16 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 		cameraParams.resolution.height,
 		cameraParams.resolution.width,
 		CV_8UC3, cameraParams.data);
+
+	if (cameraParams.videoVerticallyMirrored)
+		cv::flip(wrappedMat, wrappedMat, 0);
+
+#ifndef UWP
+
+	cv::Mat debugMat;
+	cv::cvtColor(wrappedMat, debugMat, cv::COLOR_RGB2BGR);
+
+#endif // !UWP
 
 	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
@@ -159,6 +196,16 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	if (!valid)
 		return;
 
+#ifndef UWP
+
+	cv::drawFrameAxes(
+		debugMat,
+		cameraParams.cameraMatrix,
+		cameraParams.distCoeffs,
+		rvec, tvec, detectedBoard.markerSize);
+
+#endif // !UWP
+
 	// If at least one board marker detected
 	detectedBoard.tVec[0] = (float)tvec[0];
 	detectedBoard.tVec[1] = (float)tvec[1];
@@ -169,6 +216,12 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	detectedBoard.rVec[2] = (float)rvec[2];
 
 	detectedBoard.tracked = valid ? true : false;
+
+#ifndef UWP
+
+	cv::imshow("Debug Sensor Frame", debugMat);
+
+#endif // !UWP
 }
 
 ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN INT dictId)

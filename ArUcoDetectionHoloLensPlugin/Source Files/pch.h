@@ -18,6 +18,7 @@ struct Resolution
 
 struct CameraParameters
 {
+	bool videoVerticallyMirrored;
 	byte* data;
 	Resolution resolution;
 	cv::Mat cameraMatrix;

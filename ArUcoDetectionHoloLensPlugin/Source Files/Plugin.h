@@ -8,6 +8,7 @@
 #define EXTERN extern "C"
 
 EXTERN VOID API_EXPORT INTERFACE_API SetCameraParameters(
+	bool videoVerticallyMirrored,
 	Resolution resolution,
 	void* dataPtr,
 	float* cameraMatrix,

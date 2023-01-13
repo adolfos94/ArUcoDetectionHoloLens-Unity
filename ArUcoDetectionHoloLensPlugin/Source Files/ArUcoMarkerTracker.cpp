@@ -17,19 +17,20 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 		cameraParams.resolution.width,
 		CV_8UC3, cameraParams.data);
 
+	cv::Mat sensorMat;
 	if (cameraParams.videoVerticallyMirrored)
-		cv::flip(wrappedMat, wrappedMat, 0);
+		cv::flip(wrappedMat, sensorMat, 0);
 
 #ifndef UWP
 
 	cv::Mat debugMat;
-	cv::cvtColor(wrappedMat, debugMat, cv::COLOR_RGB2BGR);
+	cv::cvtColor(sensorMat, debugMat, cv::COLOR_RGB2BGR);
 
 #endif // !UWP
 
 	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
-	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_RGB2GRAY);
+	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
 
 	// Detect markers
 	std::vector<int32_t> markerIds;
@@ -80,7 +81,7 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			bool tracked = true;
 			for (int k = 0; k < 5; ++k)
 			{
-				auto ratio = cv::rapid::rapid(wrappedMat, 50, 10, pts3d, Tri3d,
+				auto ratio = cv::rapid::rapid(sensorMat, 50, 10, pts3d, Tri3d,
 					cameraParams.cameraMatrix, rVecs.front(), tVecs.front());
 
 				if (ratio < 0.8f)
@@ -115,7 +116,7 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 
 #ifndef UWP
 
-	cv::imshow("Debug Sensor Frame", debugMat);
+	cv::imshow("Debug Sensor Frame - ArUcoMarkers", debugMat);
 
 #endif // !UWP
 }
@@ -133,19 +134,20 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 		cameraParams.resolution.width,
 		CV_8UC3, cameraParams.data);
 
+	cv::Mat sensorMat;
 	if (cameraParams.videoVerticallyMirrored)
-		cv::flip(wrappedMat, wrappedMat, 0);
+		cv::flip(wrappedMat, sensorMat, 0);
 
 #ifndef UWP
 
 	cv::Mat debugMat;
-	cv::cvtColor(wrappedMat, debugMat, cv::COLOR_RGB2BGR);
+	cv::cvtColor(sensorMat, debugMat, cv::COLOR_RGB2BGR);
 
 #endif // !UWP
 
 	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
-	cv::cvtColor(wrappedMat, grayMat, cv::COLOR_RGB2GRAY);
+	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
 
 	// Create grid board
 	auto board = cv::aruco::GridBoard::create(
@@ -219,7 +221,7 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 
 #ifndef UWP
 
-	cv::imshow("Debug Sensor Frame", debugMat);
+	cv::imshow("Debug Sensor Frame - ArUcoBoard", debugMat);
 
 #endif // !UWP
 }

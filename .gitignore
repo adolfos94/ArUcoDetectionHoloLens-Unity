@@ -6,3 +6,5 @@ ArUcoDetectionHoloLensPlugin/Build/
 ArUcoDetectionHoloLensPlugin/ArUcoDetectionPluginHoloLens/ARM64/
 
 ArUcoDetectionHoloLensPlugin/ArUcoDetectionPluginPC/x64/
+
+*.pdb

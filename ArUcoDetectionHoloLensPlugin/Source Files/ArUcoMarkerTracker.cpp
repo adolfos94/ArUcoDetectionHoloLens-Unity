@@ -3,14 +3,10 @@
 std::vector<cv::Vec3f> Pts3d = { { -0.5, 0.5, 0 }, {0.5, 0.5, 0}, {0.5, -0.5, 0}, {-0.5, -0.5, 0} };
 std::vector<cv::Vec3i> Tri3d = { { 0, 2, 1}, {0, 3, 2} };
 
-VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
+void ArUcoMarkerTracker::CreateMatFrames(
 	CONST IN CameraParameters& cameraParams,
-	OUT DetectedArUcoMarker* detectedMarkers,
-	IN INT numDetectObjects)
+	OUT cv::Mat& grayMat, OUT cv::Mat& debugMat)
 {
-	if (!cameraParams.data)
-		return;
-
 	// Create cv::Mat from sensor frame
 	cv::Mat wrappedMat = cv::Mat(
 		cameraParams.resolution.height,
@@ -20,17 +16,30 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	cv::Mat sensorMat;
 	if (cameraParams.videoVerticallyMirrored)
 		cv::flip(wrappedMat, sensorMat, 0);
+	else
+		sensorMat = wrappedMat.clone();
+
+	// Convert cv::Mat to grayscale for detection
+	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
 
 #ifndef UWP
 
-	cv::Mat debugMat;
 	cv::cvtColor(sensorMat, debugMat, cv::COLOR_RGB2BGR);
 
 #endif // !UWP
+}
 
-	// Convert cv::Mat to grayscale for detection
+VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
+	CONST IN CameraParameters& cameraParams,
+	OUT DetectedArUcoMarker* detectedMarkers,
+	IN INT numDetectObjects,
+	OUT cv::Mat& debugMat)
+{
+	if (!cameraParams.data)
+		return;
+
 	cv::Mat grayMat;
-	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
+	CreateMatFrames(cameraParams, grayMat, debugMat);
 
 	// Detect markers
 	std::vector<int32_t> markerIds;
@@ -81,7 +90,7 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			bool tracked = true;
 			for (int k = 0; k < 5; ++k)
 			{
-				auto ratio = cv::rapid::rapid(sensorMat, 50, 10, pts3d, Tri3d,
+				auto ratio = cv::rapid::rapid(grayMat, 50, 10, pts3d, Tri3d,
 					cameraParams.cameraMatrix, rVecs.front(), tVecs.front());
 
 				if (ratio < 0.8f)
@@ -113,41 +122,18 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 			detectedMarkers[i].tracked = tracked;
 		}
 	}
-
-#ifndef UWP
-
-	cv::imshow("Debug Sensor Frame - ArUcoMarkers", debugMat);
-
-#endif // !UWP
 }
 
 VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	CONST IN CameraParameters& cameraParams,
-	OUT DetectedArUcoBoard& detectedBoard)
+	OUT DetectedArUcoBoard& detectedBoard,
+	OUT cv::Mat& debugMat)
 {
 	if (!cameraParams.data)
 		return;
 
-	// Create cv::Mat from sensor frame
-	cv::Mat wrappedMat = cv::Mat(
-		cameraParams.resolution.height,
-		cameraParams.resolution.width,
-		CV_8UC3, cameraParams.data);
-
-	cv::Mat sensorMat;
-	if (cameraParams.videoVerticallyMirrored)
-		cv::flip(wrappedMat, sensorMat, 0);
-
-#ifndef UWP
-
-	cv::Mat debugMat;
-	cv::cvtColor(sensorMat, debugMat, cv::COLOR_RGB2BGR);
-
-#endif // !UWP
-
-	// Convert cv::Mat to grayscale for detection
 	cv::Mat grayMat;
-	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
+	CreateMatFrames(cameraParams, grayMat, debugMat);
 
 	// Create grid board
 	auto board = cv::aruco::GridBoard::create(
@@ -218,12 +204,6 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	detectedBoard.rVec[2] = (float)rvec[2];
 
 	detectedBoard.tracked = valid ? true : false;
-
-#ifndef UWP
-
-	cv::imshow("Debug Sensor Frame - ArUcoBoard", debugMat);
-
-#endif // !UWP
 }
 
 ArUcoMarkerTracker::ArUcoMarkerTracker(CONST IN INT dictId)

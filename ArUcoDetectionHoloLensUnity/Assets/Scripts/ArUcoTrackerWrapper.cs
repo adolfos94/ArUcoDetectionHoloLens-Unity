@@ -9,6 +9,7 @@ public class ArUcoTrackerWrapper
         unsafe
         {
             SetCameraParameters(
+                cameraParameters.videoVerticallyMirrored,
                 cameraParameters.resolution,
                 cameraParameters.data.GetUnsafePtr<byte>(),
                 cameraCalibrationParams.GetCameraMatrix(),
@@ -18,6 +19,7 @@ public class ArUcoTrackerWrapper
 
     [DllImport("ArUcoDetectionPlugin", CallingConvention = CallingConvention.StdCall)]
     private static extern unsafe void SetCameraParameters(
+        byte videoVerticallyMirrored,
         Resolution resolution,
         void* dataPtr,
         float[] cameraMatrix,

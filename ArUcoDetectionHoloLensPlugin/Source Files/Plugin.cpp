@@ -1,7 +1,6 @@
 #include "Plugin.h"
 #include "ArUcoMarkerTracker.h"
 
-cv::Mat debugMat;
 CameraParameters cameraParameters;
 ArUcoMarkerTracker arUcoMarkertracker;
 
@@ -38,18 +37,10 @@ VOID INTERFACE_API StartArUcoMarkerTracker(CONST IN INT dictId)
 
 VOID INTERFACE_API DetectArUcoMarkers(OUT DetectedArUcoMarker* detectedMarkers, IN INT numDetectObjects)
 {
-	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers, numDetectObjects, debugMat);
-
-#ifndef UWP
-	cv::imshow("Debug Sensor Frame", debugMat);
-#endif // !UWP
+	arUcoMarkertracker.DetectArUcoMarkersInFrame(cameraParameters, detectedMarkers, numDetectObjects);
 }
 
 VOID INTERFACE_API DetectArUcoBoard(OUT DetectedArUcoBoard& detectedBoard)
 {
-	arUcoMarkertracker.DetectArUCoBoardInFrame(cameraParameters, detectedBoard, debugMat);
-
-#ifndef UWP
-	cv::imshow("Debug Sensor Frame", debugMat);
-#endif // !UWP
+	arUcoMarkertracker.DetectArUCoBoardInFrame(cameraParameters, detectedBoard);
 }

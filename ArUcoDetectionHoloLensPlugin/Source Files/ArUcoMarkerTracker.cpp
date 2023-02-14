@@ -5,7 +5,7 @@ std::vector<cv::Vec3i> Tri3d = { { 0, 2, 1}, {0, 3, 2} };
 
 void ArUcoMarkerTracker::CreateMatFrames(
 	CONST IN CameraParameters& cameraParams,
-	OUT cv::Mat& grayMat, OUT cv::Mat& debugMat)
+	OUT cv::Mat& grayMat)
 {
 	// Create cv::Mat from sensor frame
 	cv::Mat wrappedMat = cv::Mat(
@@ -21,25 +21,18 @@ void ArUcoMarkerTracker::CreateMatFrames(
 
 	// Convert cv::Mat to grayscale for detection
 	cv::cvtColor(sensorMat, grayMat, cv::COLOR_RGB2GRAY);
-
-#ifndef UWP
-
-	cv::cvtColor(sensorMat, debugMat, cv::COLOR_RGB2BGR);
-
-#endif // !UWP
 }
 
 VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 	CONST IN CameraParameters& cameraParams,
 	OUT DetectedArUcoMarker* detectedMarkers,
-	IN INT numDetectObjects,
-	OUT cv::Mat& debugMat)
+	IN INT numDetectObjects)
 {
 	if (!cameraParams.data)
 		return;
 
 	cv::Mat grayMat;
-	CreateMatFrames(cameraParams, grayMat, debugMat);
+	CreateMatFrames(cameraParams, grayMat);
 
 	// Detect markers
 	std::vector<int32_t> markerIds;
@@ -100,17 +93,6 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 				}
 			}
 
-#ifndef UWP
-
-			cv::drawFrameAxes(
-				debugMat,
-				cameraParams.cameraMatrix,
-				cameraParams.distCoeffs,
-				rVecs.front(), tVecs.front(),
-				detectedMarkers[i].markerSize);
-
-#endif // !UWP
-
 			detectedMarkers[i].tVecs[0] = (float)tVecs[0][0];
 			detectedMarkers[i].tVecs[1] = (float)tVecs[0][1];
 			detectedMarkers[i].tVecs[2] = (float)tVecs[0][2];
@@ -126,14 +108,13 @@ VOID ArUcoMarkerTracker::DetectArUcoMarkersInFrame(
 
 VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 	CONST IN CameraParameters& cameraParams,
-	OUT DetectedArUcoBoard& detectedBoard,
-	OUT cv::Mat& debugMat)
+	OUT DetectedArUcoBoard& detectedBoard)
 {
 	if (!cameraParams.data)
 		return;
 
 	cv::Mat grayMat;
-	CreateMatFrames(cameraParams, grayMat, debugMat);
+	CreateMatFrames(cameraParams, grayMat);
 
 	// Create grid board
 	auto board = cv::aruco::GridBoard::create(
@@ -183,16 +164,6 @@ VOID ArUcoMarkerTracker::DetectArUCoBoardInFrame(
 
 	if (!valid)
 		return;
-
-#ifndef UWP
-
-	cv::drawFrameAxes(
-		debugMat,
-		cameraParams.cameraMatrix,
-		cameraParams.distCoeffs,
-		rvec, tvec, detectedBoard.markerSize);
-
-#endif // !UWP
 
 	// If at least one board marker detected
 	detectedBoard.tVec[0] = (float)tvec[0];

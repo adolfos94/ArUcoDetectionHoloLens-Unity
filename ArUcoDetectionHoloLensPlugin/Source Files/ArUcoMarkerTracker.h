@@ -12,13 +12,11 @@ public:
 	VOID DetectArUcoMarkersInFrame(
 		CONST IN CameraParameters& cameraParams,
 		OUT DetectedArUcoMarker* detectedMarkers,
-		IN INT numDetectObjects,
-		OUT cv::Mat& debugMat);
+		IN INT numDetectObjects);
 
 	VOID DetectArUCoBoardInFrame(
 		CONST IN CameraParameters& cameraParams,
-		OUT DetectedArUcoBoard& detectedBoard,
-		OUT cv::Mat& debugMat);
+		OUT DetectedArUcoBoard& detectedBoard);
 
 private:
 
@@ -30,5 +28,5 @@ private:
 
 	void CreateMatFrames(
 		CONST IN CameraParameters& cameraParams,
-		OUT cv::Mat& grayMat, OUT cv::Mat& debugMat);
+		OUT cv::Mat& grayMat);
 };

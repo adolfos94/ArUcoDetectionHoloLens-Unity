@@ -21,6 +21,8 @@ public class ArUcoBoardTracker : MonoBehaviour
     private CameraCapture.CameraCapture cameraCapture;
     private SpatialCameraTracker spatialCameraTracker;
 
+    private string cameraName = "CAMERA_H2";
+
     private void Start()
     {
         cameraCapture = GetComponent<CameraCapture.CameraCapture>();
@@ -35,8 +37,8 @@ public class ArUcoBoardTracker : MonoBehaviour
 
     private void OnCameraParameters(CameraParameters cameraParameters)
     {
-        ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams);
-        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName);
+        ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams, cameraName);
+        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName, cameraName);
     }
 
     private void OnProcessFrame(Matrix4x4 cameraToWorldMatrix)
@@ -48,7 +50,7 @@ public class ArUcoBoardTracker : MonoBehaviour
         detectedBoard.markerSize = trackedBoard.markerSize;
         detectedBoard.markerSeparation = trackedBoard.markerSeparation;
 
-        ArUcoTrackerWrapper.DetectArUcoBoard(ref detectedBoard);
+        ArUcoTrackerWrapper.DetectArUcoBoard(ref detectedBoard, cameraName);
 
         if (detectedBoard.tracked == 0x0)
             return;

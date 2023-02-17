@@ -21,6 +21,8 @@ public class ArUcoTracker : MonoBehaviour
     private CameraCapture.CameraCapture cameraCapture;
     private SpatialCameraTracker spatialCameraTracker;
 
+    private string cameraName = "CAMERA_H2";
+
     private void Start()
     {
         cameraCapture = GetComponent<CameraCapture.CameraCapture>();
@@ -35,8 +37,8 @@ public class ArUcoTracker : MonoBehaviour
 
     private void OnCameraParameters(CameraParameters cameraParameters)
     {
-        ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams);
-        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName);
+        ArUcoTrackerWrapper.SetCameraParameters(cameraParameters, calibParams, cameraName);
+        ArUcoTrackerWrapper.StartArUcoMarkerTracker((int)arUcoDictionaryName, cameraName);
     }
 
     private void OnProcessFrame(Matrix4x4 cameraToWorldMatrix)
@@ -49,7 +51,7 @@ public class ArUcoTracker : MonoBehaviour
             detectedObjects[i].markerSize = trackedObjects[i].markerSize;
         }
 
-        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects, trackedObjects.Length);
+        ArUcoTrackerWrapper.DetectArUcoMarkers(detectedObjects, trackedObjects.Length, cameraName);
 
         for (int i = 0; i < detectedObjects.Length; ++i)
         {
